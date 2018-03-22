@@ -5,6 +5,7 @@ import mongoose from 'mongoose'
 import config from './config/index'
 const app = express();
 
+import {createUser, retrieveUser} from './controllers/userController'
 
 
 // Middleware land
@@ -23,7 +24,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 // Define schema
 const Schema = mongoose.Schema;
 
-const clientSchema = new Schema({
+const userSchema = new Schema({
     name: {
       type: String,
       required: [true, "Company name required"]
@@ -32,21 +33,28 @@ const clientSchema = new Schema({
       type: String,
       unique: true,
       required: [true, "Company name required"]
-    }
-});
+    },
+    
+  },
+  {timestamps: true});
 
 // Compile model from schema
-const clientModel = mongoose.model('clients', clientSchema );
+const userModel = mongoose.model('users', userSchema );
 
 
 // Routing
+app.get('/create', createUser, (req, res) => {
+ 
+  
+  res.send("401")
+})
 app.get('/api/createClient', (req, res) => {
   
   
   const client = new clientModel({name: req.query.name, company: req.query.company})
   client.save((err) => {
     console.log(`Client saved: \n Name: ${req.query.name} \n Company: ${req.query.company}`)
-    if (err) return err;
+    if (err) console.log(err);
   })
 
   
