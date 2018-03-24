@@ -19,27 +19,7 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
-// Schema stuff
 
-// Define schema
-const Schema = mongoose.Schema;
-
-const userSchema = new Schema({
-    name: {
-      type: String,
-      required: [true, "Company name required"]
-    },
-    company: {
-      type: String,
-      unique: true,
-      required: [true, "Company name required"]
-    },
-    
-  },
-  {timestamps: true});
-
-// Compile model from schema
-const userModel = mongoose.model('users', userSchema );
 
 
 // Routing
@@ -51,9 +31,9 @@ app.get('/create', createUser, (req, res) => {
 app.get('/api/createClient', (req, res) => {
   
   
-  const client = new clientModel({name: req.query.name, company: req.query.company})
-  client.save((err) => {
-    console.log(`Client saved: \n Name: ${req.query.name} \n Company: ${req.query.company}`)
+  const user = new userModel({name: req.query.name, company: req.query.company})
+  user.save((err) => {
+    console.log(`user saved: \n Name: ${req.query.name} \n Company: ${req.query.company}`)
     if (err) console.log(err);
   })
 

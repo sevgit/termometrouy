@@ -1,3 +1,4 @@
 require('babel-register')
 require('./../index')
 require('./../config/index')
+require('./../resources/users/schema')
