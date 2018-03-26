@@ -2,7 +2,9 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 
-import config from './config/index'
+
+
+require('dotenv').config()
 const app = express();
 
 import {createUser, retrieveUser} from './controllers/userController'
@@ -13,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 // DB Connection
-mongoose.connect(config.db)
+mongoose.connect(process.env.DATABASE)
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -28,6 +30,10 @@ app.get('/create', createUser, (req, res) => {
   
   res.send("401")
 })
+
+app.get('/:id', (req, res) => {
+
+})
 app.get('/api/createClient', (req, res) => {
   
   
@@ -41,6 +47,7 @@ app.get('/api/createClient', (req, res) => {
   res.json({"name": req.query.name, "company": req.query.company })
 })
 
+app.post('/fetchUser', retrieveUser)
 
 
 
@@ -51,7 +58,7 @@ app.get('/api/createClient', (req, res) => {
 
 
 
-app.listen(config.port, () => {
-  console.log(`Listening on port ${config.port}`)
+app.listen(process.env.PORT, () => {
+  console.log(`Listening on port ${process.env.PORT}`)
 })
 
