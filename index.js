@@ -2,12 +2,12 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 
-
+import auth from './middleware/auth'
 
 require('dotenv').config()
 const app = express();
 
-import {createUser, retrieveUser} from './controllers/userController'
+import {createUser, retrieveUser, logUserIn} from './controllers/userController'
 
 
 // Middleware land
@@ -25,26 +25,14 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
 // Routing
-app.get('/create', createUser, (req, res) => {
- 
-  
-  res.send("401")
-})
-
+app.post('/signup', createUser)
+app.post('/login', logUserIn)
 app.get('/:id', (req, res) => {
 
 })
-app.get('/api/createClient', (req, res) => {
-  
-  
-  const user = new userModel({name: req.query.name, company: req.query.company})
-  user.save((err) => {
-    console.log(`user saved: \n Name: ${req.query.name} \n Company: ${req.query.company}`)
-    if (err) console.log(err);
-  })
 
-  
-  res.json({"name": req.query.name, "company": req.query.company })
+app.post('/auth', auth, (req, res) => {
+  res.json(req.body)
 })
 
 app.post('/fetchUser', retrieveUser)

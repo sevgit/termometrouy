@@ -1,17 +1,72 @@
 import mongoose from 'mongoose'
 import User from '../resources/users/schema'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+
+require('dotenv').config()
 
 export const createUser = (req, res, next) => {
-    const name = req.query.name
-    const company = req.query.company
+    const {name, email, password, company} = req.body
 
-    const user = new User({name: name, company: company})
-  user.save((err) => {
-    console.log(`user saved: \n Name: ${req.query.name} \n Company: ${req.query.company}`)
-    if (err) console.log(err);
-  })
-    
-    next()
+    User.find({ email })
+      .exec()
+      .then(user => {
+        if (user.length >= 1) {
+          return res.json({problem: "user already exists"})
+        } else {
+          bcrypt.hash(password, 10, (err, hash) => {
+            if (err) {
+              return res.status(500).json({error: err})
+            } else {
+              const user = new User({
+                name,
+                email,
+                password: hash,
+                company
+              })
+      
+              user.save((err) => {
+                console.log(`user saved: \n Name: ${user.name} \n password: ${user.password} \n email: ${user.email} \n company: ${user.company}`)
+                if (err) console.log(err);
+              })
+            }
+          })
+        }
+      })
+}
+
+export const logUserIn = (req, res, next) => {
+  User.findOne({ email: req.body.email })
+    .exec()
+    .then(user => {
+      if (!user) {
+        return res.status(401).json({message: 'Mail not found'})
+      } else {
+        bcrypt.compare(req.body.password, user.password, (err, result) => {
+          if (err) {
+            return res.status(401).json({message: 'Auth failed, ERROR'})
+          }
+          if (result) {
+            const token = jwt.sign({
+              email: user.email,
+              userId: user._id
+            }, process.env.SECRET,
+          {
+            expiresIn: "1hr"
+          })
+            return res.status(200).json({
+              message: 'Auth successful',
+              token
+            })
+          }
+          res.status(401).json({message: 'Wrong pw'})
+        })
+      }
+    })
+    .catch(err => {
+      console.log(err)
+      res.status(500).json({error: err})
+    })
 }
 
 export const retrieveUser = (req, res) => {
