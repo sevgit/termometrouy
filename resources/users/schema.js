@@ -1,7 +1,5 @@
 import mongoose from 'mongoose'
 
-// Schema stuff
-
 // Define schema
 const Schema = mongoose.Schema;
 
@@ -22,7 +20,6 @@ const userSchema = new Schema({
     },
     company: {
       type: String,
-      unique: true,
       required: [true, "Company name required"]
     },
     

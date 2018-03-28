@@ -1,13 +1,13 @@
 import express from 'express'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
-
 import auth from './middleware/auth'
+import userRoutes from './routes/user'
 
 require('dotenv').config()
 const app = express();
 
-import {createUser, retrieveUser, logUserIn} from './controllers/userController'
+
 
 
 // Middleware land
@@ -21,21 +21,15 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 
-
-
-
 // Routing
-app.post('/signup', createUser)
-app.post('/login', logUserIn)
-app.get('/:id', (req, res) => {
+app.use('/user', userRoutes)
 
-})
 
 app.post('/auth', auth, (req, res) => {
   res.json(req.body)
 })
 
-app.post('/fetchUser', retrieveUser)
+
 
 
 

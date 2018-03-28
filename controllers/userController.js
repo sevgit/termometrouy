@@ -7,12 +7,15 @@ require('dotenv').config()
 
 export const createUser = (req, res, next) => {
     const {name, email, password, company} = req.body
-
+   
     User.find({ email })
       .exec()
       .then(user => {
+        console.log(user)
         if (user.length >= 1) {
-          return res.json({problem: "user already exists"})
+          return res.status(409).json({
+            message: 'Mail exists'
+          })
         } else {
           bcrypt.hash(password, 10, (err, hash) => {
             if (err) {
@@ -29,6 +32,10 @@ export const createUser = (req, res, next) => {
                 console.log(`user saved: \n Name: ${user.name} \n password: ${user.password} \n email: ${user.email} \n company: ${user.company}`)
                 if (err) console.log(err);
               })
+              res.status(201).json({
+                message: 'User created'
+              })
+              
             }
           })
         }
