@@ -2,7 +2,8 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 import auth from './middleware/auth'
-import userRoutes from './routes/user'
+import userRoutes from './routes/userRoutes'
+
 
 require('dotenv').config()
 const app = express();

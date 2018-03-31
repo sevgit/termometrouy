@@ -1,13 +1,20 @@
 import mongoose from 'mongoose'
-import User from '../resources/users/schema'
+import User from '../models/userModel'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 require('dotenv').config()
 
 export const createUser = (req, res, next) => {
+    
     const {name, email, password, company} = req.body
-   
+
+    if (!name || !email || !password || !company) {
+      
+      return res.status(409).json({
+        message: 'missing details'
+      })
+    }
     User.find({ email })
       .exec()
       .then(user => {
@@ -61,7 +68,7 @@ export const logUserIn = (req, res, next) => {
           {
             expiresIn: "1hr"
           })
-            return res.status(200).json({
+            return res.status(201).json({
               message: 'Auth successful',
               token
             })
