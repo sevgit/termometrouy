@@ -3,7 +3,7 @@ import bodyParser from 'body-parser'
 import mongoose from 'mongoose'
 import auth from './middleware/auth'
 import userRoutes from './routes/userRoutes'
-
+import surveyRoutes from './routes/surveyRoutes'
 
 require('dotenv').config()
 const app = express();
@@ -24,22 +24,11 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // Routing
 app.use('/user', userRoutes)
+app.use('/survey', surveyRoutes)
 
-
-app.post('/auth', auth, (req, res) => {
-  res.json(req.body)
+app.get('/auth', auth, (req, res) => {
+  res.status(200).json({message: 'Auth ok'})
 })
-
-
-
-
-
-
-
-
-
-
-
 
 app.listen(process.env.PORT, () => {
   console.log(`Listening on port ${process.env.PORT}`)

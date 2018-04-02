@@ -3,11 +3,8 @@ import mongoose from 'mongoose'
 // Define schema
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-    surveyId: {
-      type: String,
-      required: true,
-    },
+const surveySchema = new Schema({
+    
     createdBy: {
       type: String,
       required: true

@@ -1,5 +1,8 @@
 import mongoose from 'mongoose'
 import User from '../models/userModel'
+import { dropDb } from './helpers'
+import 'babel-polyfill'
+
 
 mongoose.Promise = global.Promise;
 
@@ -26,13 +29,29 @@ const registerDetails = {
 
 describe('Create new account', () => {
   
+  
+
   describe('POST /user/signup', () => {
+    before(async () => {
+      await dropDb()
+      
+    })
     it('should register a new user', (done) => {
       chai.request('http://localhost:3000')
         .post('/user/signup')
         .send(registerDetails)
         .end((err, res) => {
           res.should.have.status(201)
+          done()
+        })
+    })
+
+    it('should NOT register a duplicate EMAIL', (done) => {
+      chai.request('http://localhost:3000')
+        .post('/user/signup')
+        .send(registerDetails)
+        .end((err, res) => {
+          res.should.have.status(409)
           done()
         })
     })
@@ -101,3 +120,73 @@ describe('Retrieve authentication token', () => {
     })
   })
 })
+
+
+describe('Access protected route', () => {
+
+  describe('GET /auth WITHOUT token', () => {
+    it('Should not allow access with no token', (done) => {
+      chai.request('http://localhost:3000')
+          .get('/auth')
+          .end((req, res) => {
+            res.should.have.status(401)
+            done()
+          })
+    })
+  })
+  
+  describe('GET /auth WITH token', () => {
+    let token;
+
+    before((done) => {
+      
+      chai.request('http://localhost:3000')
+        .post('/user/login')
+        .send(userCredentials)
+        .end((req, res) => {
+          token = res.body.token
+          
+          done()
+        })
+    })
+    it('Should allow access with token', (done) => {
+      chai.request('http://localhost:3000')
+          .get('/auth')
+          .set('Authorization', `Bearer ${token}`)
+          .end((req, res) => {
+            res.should.have.status(200)
+            done()
+          })
+    })
+  })
+})
+
+describe('Create new survey', () => {
+  let token;
+
+    before((done) => {
+      
+      chai.request('http://localhost:3000')
+        .post('/user/login')
+        .send(userCredentials)
+        .end((req, res) => {
+          token = res.body.token
+          
+          done()
+        })
+    })
+
+  describe('POST /survey/create', () => {
+
+    it('Should create a new survey', (done) => {
+      chai.request('http://localhost:3000')
+          .get('/survey/create')
+          .set('Authorization', `Bearer ${token}`)
+          .end((req, res) => {
+            res.should.have.status(201)
+            done()
+          })
+    })
+  })
+})
+
