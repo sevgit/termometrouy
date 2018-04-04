@@ -1,17 +1,17 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
 
 // Define schema
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
-const surveySchema = new Schema({
-    
+const surveySchema = new Schema(
+  {
     createdBy: {
       type: String,
-      required: true
+      required: true,
     },
     tokens: {
       type: Number,
-      required: true
+      required: true,
     },
     usedTokens: {
       type: Number,
@@ -21,9 +21,10 @@ const surveySchema = new Schema({
       type: [Schema.Types.Mixed],
       required: true,
     },
-    
+
   },
-  {timestamps: true});
+  { timestamps: true },
+);
 
 // Compile model from schema
-export default mongoose.model('surveys', surveySchema );
+export default mongoose.model('surveys', surveySchema);
