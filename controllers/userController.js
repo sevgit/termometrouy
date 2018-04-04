@@ -16,8 +16,8 @@ export const createUser = (req, res, next) => {
   }
   User.find({ email })
     .exec()
-    .then((user) => {
-      if (user.length >= 1) {
+    .then((foundUser) => {
+      if (foundUser.length >= 1) {
         return res.status(409).json({
           message: 'Mail exists',
         });

@@ -155,22 +155,22 @@ describe('Access protected route', () => {
 describe('Create new survey', () => {
   let token;
 
-  before((done) => { 
+  before((done) => {
     chai.request('http://localhost:3000')
       .post('/user/login')
       .send(userCredentials)
       .end((req, res) => {
-        token = res.body.token;
+        token = res.body.token;        
         done();
       });
   });
 
   describe('POST /survey/create', () => {
-
     it('Should create a new survey', (done) => {
       chai.request('http://localhost:3000')
-        .get('/survey/create')
+        .post('/survey/create')
         .set('Authorization', `Bearer ${token}`)
+        .send({ tokens: 3, createdBy: 'Sevg', surveyName: 'test' })
         .end((req, res) => {
           res.should.have.status(201);
           done();

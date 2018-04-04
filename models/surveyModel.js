@@ -5,6 +5,10 @@ const { Schema } = mongoose;
 
 const surveySchema = new Schema(
   {
+    surveyName: {
+      type: String,
+      required: true,
+    },
     createdBy: {
       type: String,
       required: true,
