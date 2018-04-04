@@ -14,6 +14,8 @@ The server/api for the termómetro app.
 
 * POST `/survey/create` will attempt to create a new survey. *WIP*
 
+* GET `/survey/:id` will search the surveys collection for a survey that matches the query id (surveyName = id)
+
 ## Testing
 
 `npm run test` should trigger the automatic tests provided you have mocha installed globally.
