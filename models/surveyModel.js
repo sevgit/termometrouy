@@ -8,6 +8,7 @@ const surveySchema = new Schema(
     surveyName: {
       type: String,
       required: true,
+      unique: true,
     },
     createdBy: {
       type: String,

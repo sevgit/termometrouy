@@ -25,6 +25,12 @@ const registerDetails = {
   password: '123@abc',
 };
 
+const surveyDetails = {
+  tokens: 3,
+  createdBy: 'Sevg',
+  surveyName: 'test',
+};
+
 describe('Create new account', () => {
 
   describe('POST /user/signup', () => {
@@ -54,7 +60,7 @@ describe('Create new account', () => {
     it('should NOT register without an EMAIL', (done) => {
       chai.request('http://localhost:3000')
         .post('/user/signup')
-        .send({name: 'Sebastián Ventura',company: 'Terrible',password: '123@abc'})
+        .send({ name: 'Sebastián Ventura', company: 'Terrible',password: '123@abc' })
         .end((err, res) => {
           res.should.have.status(409);
           done();
@@ -64,7 +70,7 @@ describe('Create new account', () => {
     it('should NOT register without a NAME', (done) => {
       chai.request('http://localhost:3000')
         .post('/user/signup')
-        .send({email: 'email@email.com',company: 'Terrible',password: '123@abc'})
+        .send({email: 'email@email.com', company: 'Terrible', password: '123@abc'})
         .end((err, res) => {
           res.should.have.status(409);
           done();
@@ -73,7 +79,7 @@ describe('Create new account', () => {
     it('should NOT register without a COMPANY', (done) => {
       chai.request('http://localhost:3000')
         .post('/user/signup')
-        .send({name: 'Sebastián Ventura', email: 'email@email.com',password: '123@abc'})
+        .send({name: 'Sebastián Ventura', email: 'email@email.com', password: '123@abc'})
         .end((err, res) => {
           res.should.have.status(409);
           done();
@@ -85,6 +91,7 @@ describe('Create new account', () => {
 describe('Retrieve authentication token', () => {
 
   describe('POST /user/login', () => {
+
     it('should retrieve a token when credentials are ok', (done) => {
       chai.request('http://localhost:3000')
         .post('/user/login')
@@ -104,6 +111,7 @@ describe('Retrieve authentication token', () => {
           done();
         });
     });
+
     it('should NOT retrieve a token when an EMAIL doesn\'t exist', (done) => {
       chai.request('http://localhost:3000')
         .post('/user/login')
@@ -115,7 +123,6 @@ describe('Retrieve authentication token', () => {
     });
   });
 });
-
 
 describe('Access protected route', () => {
   describe('GET /auth WITHOUT token', () => {
@@ -140,6 +147,7 @@ describe('Access protected route', () => {
           done();
         });
     });
+
     it('Should allow access with token', (done) => {
       chai.request('http://localhost:3000')
         .get('/auth')
@@ -160,19 +168,35 @@ describe('Create new survey', () => {
       .post('/user/login')
       .send(userCredentials)
       .end((req, res) => {
+        
         token = res.body.token;        
         done();
       });
   });
 
   describe('POST /survey/create', () => {
+    before(async () => {
+      await dropDb();
+    });
+
     it('Should create a new survey', (done) => {
       chai.request('http://localhost:3000')
         .post('/survey/create')
         .set('Authorization', `Bearer ${token}`)
-        .send({ tokens: 3, createdBy: 'Sevg', surveyName: 'test' })
+        .send(surveyDetails)
         .end((req, res) => {
           res.should.have.status(201);
+          done();
+        });
+    });
+
+    it('Should NOT create a survey with an already-in-use surveyName', (done) => {
+      chai.request('http://localhost:3000')
+        .post('/survey/create')
+        .set('Authorization', `Bearer ${token}`)
+        .send(surveyDetails)
+        .end((req, res) => {
+          res.should.have.status(409);
           done();
         });
     });

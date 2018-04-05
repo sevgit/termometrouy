@@ -10,20 +10,28 @@ export const createSurvey = (req, res, next) => {
       message: 'missing details',
     });
   }
+  Survey.find({ surveyName })
+    .exec()
+    .then((foundSurvey) => {
+      if (foundSurvey.length >= 1) {
+        return res.status(409).json({
+          message: 'A survey with the specified Id already exists',
+        });
+      }
 
-  const survey = new Survey({
-    surveyName,
-    createdBy,
-    tokens,
-    usedTokens: 0,
-    completedSurveys: [],
-  });
-
-  survey.save((err) => {
-    console.log('Survey created');
-    if (err) console.log(err);
-    res.status(201).json({ survey });
-  });
+      const survey = new Survey({
+        surveyName,
+        createdBy,
+        tokens,
+        usedTokens: 0,
+        completedSurveys: [],
+      });
+      survey.save((err) => {
+        console.log('Survey created');
+        if (err) console.log(err);
+        res.status(201).json({ survey });
+      });
+    });
 };
 
 export const fetchSurvey = (req, res, next) => {
